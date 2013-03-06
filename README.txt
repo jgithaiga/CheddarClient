@@ -27,4 +27,4 @@
  */
 
 Compile using "ant clean compile"
-Create a deployable jar using "ant clean package"
+Create a deployable jar using "ant clean package" 
