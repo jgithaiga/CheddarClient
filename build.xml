@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="cheddar-getter-client" default="package" basedir=".">
+<project name="cheddar.getter.client" default="package" basedir=".">
     <description>
                 This build file builds and packages the Cheddar Getter Client Library into a jar file.
 	</description>

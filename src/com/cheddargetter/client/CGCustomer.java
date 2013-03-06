@@ -26,81 +26,94 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.rusticisoftware.cheddargetter.client;
+package com.cheddargetter.client;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 import org.w3c.dom.Element;
 
-public class CGInvoice implements Serializable {
+public class CGCustomer implements Serializable {
 	protected String id;
-	protected String number;
-	protected String type;
-	protected Date billingDatetime;
+	protected String code;
+	protected String firstName;
+	protected String lastName;
+	protected String company;
+	protected String email;
+	protected String gatewayToken;
 	protected Date createdDatetime;
-	protected List<CGTransaction> transactions = new ArrayList<CGTransaction>();
-	protected List<CGCharge> charges = new ArrayList<CGCharge>();
+	protected Date modifiedDatetime;
+	protected List<CGSubscription> subscriptions = new ArrayList<CGSubscription>();
 	
 	public String getId() {
 		return id;
 	}
 
-	public String getNumber() {
-		return number;
+	public String getCode() {
+		return code;
 	}
 
-	public String getType() {
-		return type;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public Date getBillingDatetime() {
-		return billingDatetime;
+	public String getLastName() {
+		return lastName;
+	}
+
+	public String getCompany() {
+		return company;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public String getGatewayToken() {
+		return gatewayToken;
 	}
 
 	public Date getCreatedDatetime() {
 		return createdDatetime;
 	}
-	
-	public List<CGTransaction> getTransactions(){
-		return transactions;
-	}
-	
-	public List<CGCharge> getCharges() {
-		return charges;
-	}
-	
-	public double getTotalAmount(){
-		double sum = 0.0d;
-		for(CGCharge charge : charges){
-			sum += charge.getEachAmount() * charge.getQuantity();
-		}
-		return sum;
+
+	public Date getModifiedDatetime() {
+		return modifiedDatetime;
 	}
 
-	public CGInvoice(Element elem){
+	public List<CGSubscription> getSubscriptions() {
+		return subscriptions;
+	}
+
+	public CGCustomer(Element elem){
 		this.id = elem.getAttribute("id");
-		this.number = XmlUtils.getNamedElemValue(elem, "number");
-		this.type = XmlUtils.getNamedElemValue(elem, "type");
-		this.billingDatetime = CGService.parseCgDate(XmlUtils.getNamedElemValue(elem, "billingDatetime"));
+		this.code = elem.getAttribute("code");
+		this.firstName = XmlUtils.getNamedElemValue(elem, "firstName");
+		this.lastName = XmlUtils.getNamedElemValue(elem, "lastName");
+		this.company = XmlUtils.getNamedElemValue(elem, "company");
+		this.email = XmlUtils.getNamedElemValue(elem, "email");
+		this.gatewayToken = XmlUtils.getNamedElemValue(elem, "gatewayToken");
 		this.createdDatetime = CGService.parseCgDate(XmlUtils.getNamedElemValue(elem, "createdDatetime"));
+		this.modifiedDatetime = CGService.parseCgDate(XmlUtils.getNamedElemValue(elem, "modifiedDatetime"));
 		
-		Element transactionsParent = XmlUtils.getFirstChildByTagName(elem, "transactions");
-		if(transactionsParent != null){
-			List<Element> transactionsList = XmlUtils.getChildrenByTagName(transactionsParent, "transaction");
-			for(Element transaction : transactionsList){
-				this.transactions.add(new CGTransaction(transaction));
+		Element subsParent = XmlUtils.getFirstChildByTagName(elem, "subscriptions");
+		if(subsParent != null){
+			List<Element> subsList = XmlUtils.getChildrenByTagName(subsParent, "subscription");
+			for(Element sub : subsList){
+				this.subscriptions.add(new CGSubscription(sub));
 			}
-		}
-		
-		Element chargesParent = XmlUtils.getFirstChildByTagName(elem, "charges");
-		if(chargesParent != null){
-			List<Element> chargesList = XmlUtils.getChildrenByTagName(chargesParent, "charge");
-			for(Element charge : chargesList){
-				this.charges.add(new CGCharge(charge));
-			}
+			
+			//Sort subscriptions by create date (most recent first)
+			Collections.sort(this.subscriptions, 
+				new Comparator<CGSubscription>() {
+					public int compare(CGSubscription sub1, CGSubscription sub2) {
+						return sub2.getCreatedDatetime().compareTo(sub1.getCreatedDatetime());
+					}
+				});
 		}
 	}
 }

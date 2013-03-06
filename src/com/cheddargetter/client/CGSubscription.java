@@ -26,8 +26,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.rusticisoftware.cheddargetter.client;
+package com.cheddargetter.client;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -38,7 +39,7 @@ import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
-public class CGSubscription {
+public class CGSubscription implements Serializable {
 	
 	protected String id;
 	protected String gatewayToken;

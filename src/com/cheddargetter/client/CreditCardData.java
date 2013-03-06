@@ -26,53 +26,76 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.rusticisoftware.cheddargetter.client;
+package com.cheddargetter.client;
 
-public class CGException extends Exception {
-	public static final int REQUEST_INVALID = 400;
-	public static final int NOT_AUTHORIZED = 401;
-	public static final int NOT_FOUND = 404;
-	public static final int PRECONDITION_FAILED = 412;
-	public static final int DATA_INVALID = 500;
-	public static final int USAGE_INVALID = 500;
-	public static final int UNKNOWN = 500;
-	public static final int BAD_GATEWAY = 512;
+import java.io.Serializable;
+
+public class CreditCardData implements Serializable {
+	private String firstName;
+	private String lastName;
+	private String type;
+	private String lastFour;
+	private int expireMonth;
+	private int expireYear;
 	
-	private int code = UNKNOWN;
-	private String auxCode = "none";
-	
-	public int getCode(){
-		return code;
+	public String getFirstName() {
+		return firstName;
 	}
-	public void setCode(int code){
-		this.code = code;
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
-	
-	public String getAuxCode(){
-		return auxCode;
+
+	public String getLastName() {
+		return lastName;
 	}
-	public void setAuxCode(String auxCode){
-		this.auxCode = auxCode;
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
-	
-	public CGException (int code, String auxCode, String message){
-		super(message);
-		this.setCode(code);
-		this.setAuxCode(auxCode);
+
+	public String getType() {
+		return type;
 	}
-	
-	public String toString(){
-		return "CGException: Code = " + getCode() +
-				("none".equals(auxCode) ? "" : ", AuxCode = " + auxCode) +
-				", Message = " + this.getMessage();
+
+	public void setType(String type) {
+		this.type = type;
 	}
-	
-	public boolean isGatewayError(){
-		boolean ret = false;
-		try {
-			ret = (auxCode != "none" && (Integer.parseInt(auxCode) < 5000 || Integer.parseInt(auxCode) >= 7000));
-		} catch (Exception e) {};
-		return ret;
+
+	public String getLastFour() {
+		return lastFour;
 	}
+
+	public void setLastFour(String lastFour) {
+		this.lastFour = lastFour;
+	}
+
+	public int getExpireMonth() {
+		return expireMonth;
+	}
+
+	public void setExpireMonth(int expireMonth) {
+		this.expireMonth = expireMonth;
+	}
+
+	public int getExpireYear() {
+		return expireYear;
+	}
+
+	public void setExpireYear(int expireYear) {
+		this.expireYear = expireYear;
+	}
+
+	public CreditCardData() {
 		
+	}
+	
+	public CreditCardData(String firstName, String lastName, String type, String lastFour, int expireMonth, int expireYear){
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.type = type;
+		this.lastFour = lastFour;
+		this.expireMonth = expireMonth;
+		this.expireYear = expireYear;
+	}
 }

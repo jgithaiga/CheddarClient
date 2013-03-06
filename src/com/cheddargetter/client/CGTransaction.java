@@ -26,74 +26,67 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.rusticisoftware.cheddargetter.client;
+package com.cheddargetter.client;
 
-public class CreditCardData {
-	private String firstName;
-	private String lastName;
-	private String type;
-	private String lastFour;
-	private int expireMonth;
-	private int expireYear;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.w3c.dom.Element;
+
+public class CGTransaction implements Serializable {
+	protected String id;
+	protected String code;
+	protected String parentId;
+	//CGGatewayAccount ?
+	protected float amount;
+	protected String memo;
+	protected String response;
+	protected Date transactedDatetime;
+	protected Date createdDatetime;
 	
-	public String getFirstName() {
-		return firstName;
+	public String getId() {
+		return id;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public String getCode() {
+		return code;
 	}
 
-	public String getLastName() {
-		return lastName;
+	public String getParentId() {
+		return parentId;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+	public float getAmount() {
+		return amount;
 	}
 
-	public String getType() {
-		return type;
+	public String getMemo() {
+		return memo;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public String getResponse() {
+		return response;
 	}
 
-	public String getLastFour() {
-		return lastFour;
+	public Date getTransactedDatetime() {
+		return transactedDatetime;
 	}
 
-	public void setLastFour(String lastFour) {
-		this.lastFour = lastFour;
+	public Date getCreatedDatetime() {
+		return createdDatetime;
 	}
 
-	public int getExpireMonth() {
-		return expireMonth;
-	}
-
-	public void setExpireMonth(int expireMonth) {
-		this.expireMonth = expireMonth;
-	}
-
-	public int getExpireYear() {
-		return expireYear;
-	}
-
-	public void setExpireYear(int expireYear) {
-		this.expireYear = expireYear;
-	}
-
-	public CreditCardData() {
-		
+	public CGTransaction(Element elem) {
+		this.id = elem.getAttribute("id");
+		this.code = elem.getAttribute("code");
+		this.parentId = XmlUtils.getNamedElemValue(elem, "parentId");
+		this.amount = (Float)XmlUtils.getNamedElemValue(elem, "amount", Float.class, 0.0f);
+		this.memo = XmlUtils.getNamedElemValue(elem, "memo");
+		this.response = XmlUtils.getNamedElemValue(elem, "response");
+		this.transactedDatetime = CGService.parseCgDate(XmlUtils.getNamedElemValue(elem, "transactedDatetime"));
+		this.createdDatetime = CGService.parseCgDate(XmlUtils.getNamedElemValue(elem, "createdDatetime"));
 	}
 	
-	public CreditCardData(String firstName, String lastName, String type, String lastFour, int expireMonth, int expireYear){
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.type = type;
-		this.lastFour = lastFour;
-		this.expireMonth = expireMonth;
-		this.expireYear = expireYear;
-	}
 }

@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.rusticisoftware.cheddargetter.client;
+package com.cheddargetter.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -59,7 +59,8 @@ public class CGService implements ICGService {
 	private static final int GET_CUSTOMER_TIMEOUT = 15000; //15 seconds
 	private static final int GET_ITEM_QUANTITY_TIMEOUT = 10000; //10 seconds (relies on getting a customer, but not as mission critical, so higher but not high)
 	private static final int ADD_ITEM_QUANTITY_TIMEOUT = 5000; //5 seconds 
-	
+	private static final int SET_ITEM_QUANTITY_TIMEOUT = 5000; //5 seconds 
+	private static final int REMOVE_ITEM_QUANTITY_TIMEOUT = 5000; //5 seconds	
 	
 	private static Logger log = Logger.getLogger(CGService.class.getName());
 	
@@ -309,6 +310,41 @@ public class CGService implements ICGService {
 	    
 	    return makeServiceCall(relativeUrl, paramMap, ADD_ITEM_QUANTITY_TIMEOUT);
 	    
+	}
+	
+	public Document setItemQuantity(String customerCode, String itemCode, int quantity) throws Exception {
+	    HashMap<String, String> paramMap = new HashMap<String, String>();
+	    paramMap.put("quantity", String.valueOf(quantity));
+	    
+	    String relativeUrl = "/customers/set-item-quantity/productCode/" + getProductCode() + 
+	                         "/code/" + customerCode + "/itemCode/" + itemCode;
+	    
+	    return makeServiceCall(relativeUrl, paramMap, SET_ITEM_QUANTITY_TIMEOUT);
+	    
+	}
+	
+	public Document removeItemQuantity(String customerCode, String itemCode, int quantity) throws Exception {
+	    HashMap<String, String> paramMap = new HashMap<String, String>();
+	    paramMap.put("quantity", String.valueOf(quantity));
+	    
+	    String relativeUrl = "/customers/remove-item-quantity/productCode/" + getProductCode() + 
+	                         "/code/" + customerCode + "/itemCode/" + itemCode;
+	    
+	    return makeServiceCall(relativeUrl, paramMap, REMOVE_ITEM_QUANTITY_TIMEOUT);
+	    
+	}
+	
+	public Document createOneTimeInvoice(String customerCode, String chargeCode, int quantity, double eachAmount, String description) throws Exception {
+	    HashMap<String, String> paramMap = new HashMap<String, String>();	    
+	    paramMap.put("charges[0][chargeCode]", chargeCode);
+	    paramMap.put("charges[0][quantity]", String.valueOf(quantity));
+	    paramMap.put("charges[0][eachAmount]", String.valueOf(eachAmount));
+	    paramMap.put("charges[0][description]", description);	    
+	    
+	    String relativeUrl = "/invoices/new/productCode/" + getProductCode() + 
+	                         "/code/" + customerCode;
+	    
+	    return makeServiceCall(relativeUrl, paramMap, DEFAULT_TIMEOUT);
 	}
 	
 	/* (non-Javadoc)

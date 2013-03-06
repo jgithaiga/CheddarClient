@@ -26,68 +26,81 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.rusticisoftware.cheddargetter.client;
+package com.cheddargetter.client;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.w3c.dom.Element;
 
-public class CGItem {
+public class CGInvoice implements Serializable {
 	protected String id;
-	protected String code;
-	protected String name;
-	protected int quantity;
-	protected int quantityIncluded;
-	protected boolean isPeriodic;
-	protected float overageAmount;
+	protected String number;
+	protected String type;
+	protected Date billingDatetime;
 	protected Date createdDatetime;
-	protected Date modifiedDatetime;
+	protected List<CGTransaction> transactions = new ArrayList<CGTransaction>();
+	protected List<CGCharge> charges = new ArrayList<CGCharge>();
 	
 	public String getId() {
 		return id;
 	}
 
-	public String getCode() {
-		return code;
+	public String getNumber() {
+		return number;
 	}
 
-	public String getName() {
-		return name;
+	public String getType() {
+		return type;
 	}
 
-	public int getQuantity() {
-		return quantity;
-	}
-
-	public int getQuantityIncluded() {
-		return quantityIncluded;
-	}
-
-	public boolean isPeriodic() {
-		return isPeriodic;
-	}
-
-	public float getOverageAmount() {
-		return overageAmount;
+	public Date getBillingDatetime() {
+		return billingDatetime;
 	}
 
 	public Date getCreatedDatetime() {
 		return createdDatetime;
 	}
-
-	public Date getModifiedDatetime() {
-		return modifiedDatetime;
+	
+	public List<CGTransaction> getTransactions(){
+		return transactions;
+	}
+	
+	public List<CGCharge> getCharges() {
+		return charges;
+	}
+	
+	public double getTotalAmount(){
+		double sum = 0.0d;
+		for(CGCharge charge : charges){
+			sum += charge.getEachAmount() * charge.getQuantity();
+		}
+		return sum;
 	}
 
-	public CGItem(Element elem){
+	public CGInvoice(Element elem){
 		this.id = elem.getAttribute("id");
-		this.code = elem.getAttribute("code");
-		this.name = XmlUtils.getNamedElemValue(elem, "name");
-		this.quantity = (Integer)XmlUtils.getNamedElemValue(elem, "quantity", Integer.class, 0);
-		this.quantityIncluded = (Integer)XmlUtils.getNamedElemValue(elem, "quantityIncluded", Integer.class, 0);
-		this.isPeriodic = (Boolean)XmlUtils.getNamedElemValue(elem, "isPeriodic", Boolean.class, false);
-		this.overageAmount = (Float)XmlUtils.getNamedElemValue(elem, "overageAmount", Float.class, 0.0f);
+		this.number = XmlUtils.getNamedElemValue(elem, "number");
+		this.type = XmlUtils.getNamedElemValue(elem, "type");
+		this.billingDatetime = CGService.parseCgDate(XmlUtils.getNamedElemValue(elem, "billingDatetime"));
 		this.createdDatetime = CGService.parseCgDate(XmlUtils.getNamedElemValue(elem, "createdDatetime"));
-		this.modifiedDatetime = CGService.parseCgDate(XmlUtils.getNamedElemValue(elem, "modifiedDatetime"));
+		
+		Element transactionsParent = XmlUtils.getFirstChildByTagName(elem, "transactions");
+		if(transactionsParent != null){
+			List<Element> transactionsList = XmlUtils.getChildrenByTagName(transactionsParent, "transaction");
+			for(Element transaction : transactionsList){
+				this.transactions.add(new CGTransaction(transaction));
+			}
+		}
+		
+		Element chargesParent = XmlUtils.getFirstChildByTagName(elem, "charges");
+		if(chargesParent != null){
+			List<Element> chargesList = XmlUtils.getChildrenByTagName(chargesParent, "charge");
+			for(Element charge : chargesList){
+				this.charges.add(new CGCharge(charge));
+			}
+		}
 	}
 }
