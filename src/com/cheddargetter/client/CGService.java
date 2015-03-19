@@ -171,7 +171,7 @@ public class CGService implements ICGService {
 	public CGCustomer createNewCustomer(String custCode, String firstName, String lastName, 
 			String email, String company, String subscriptionPlanCode, String ccFirstName,
 			String ccLastName, String ccNumber, String ccExpireMonth, String ccExpireYear, 
-			String ccCardCode, String ccZip) throws Exception {
+			String ccCardCode, String ccZip, String couponCode) throws Exception {
 		
 		HashMap<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("code", custCode);
@@ -183,6 +183,7 @@ public class CGService implements ICGService {
 		}
 		
 		paramMap.put("subscription[planCode]", subscriptionPlanCode);
+		if (couponCode != null) paramMap.put("subscription[couponCode]", couponCode);
 		
 		//If plan is free, no cc information needed, so we just check
 		//ccNumber field and assume the rest are there or not
@@ -208,7 +209,7 @@ public class CGService implements ICGService {
 	public CGCustomer updateCustomerAndSubscription(String custCode, String firstName, String lastName, 
 			String email, String company, String subscriptionPlanCode, String ccFirstName,
 			String ccLastName, String ccNumber, String ccExpireMonth, String ccExpireYear, 
-			String ccCardCode, String ccZip) throws Exception {
+			String ccCardCode, String ccZip, String couponCode) throws Exception {
 		
 		HashMap<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("firstName", firstName);
@@ -218,7 +219,8 @@ public class CGService implements ICGService {
 			paramMap.put("company", company);
 		}
 		
-		paramMap.put("subscription[planCode]", subscriptionPlanCode);
+		paramMap.put("subscription[planCode]", subscriptionPlanCode);		
+		if (couponCode != null) paramMap.put("subscription[couponCode]", couponCode);
 		
 		//If plan is free, no cc information needed, so we just check
 		//ccNumber field and assume the rest are there or not
@@ -233,7 +235,7 @@ public class CGService implements ICGService {
 			if(ccZip != null){
 				paramMap.put("subscription[ccZip]", ccZip);
 			}
-		}
+		}		
 
 		Document doc = makeServiceCall("/customers/edit/productCode/" + getProductCode() + "/code/" + custCode, paramMap);
 		Element root = doc.getDocumentElement();
@@ -260,10 +262,12 @@ public class CGService implements ICGService {
 	 * @see com.rusticisoftware.cheddargetter.client.ICGService#updateSubscription(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	public Document updateSubscription(String customerCode, String planCode, String ccFirstName, String ccLastName,
-			String ccNumber, String ccExpireMonth, String ccExpireYear, String ccCardCode, String ccZip) throws Exception {
+			String ccNumber, String ccExpireMonth, String ccExpireYear, String ccCardCode, 
+			String ccZip, String couponCode) throws Exception {
 		
 		HashMap<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("planCode", planCode);
+		if (couponCode != null) paramMap.put("subscription[couponCode]", couponCode);
 		
 		//If plan is free, no cc information needed, so we just check
 		//ccNumber field and assume the rest are there or not

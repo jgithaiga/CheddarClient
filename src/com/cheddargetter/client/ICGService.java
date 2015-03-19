@@ -58,12 +58,12 @@ public interface ICGService {
 			String firstName, String lastName, String email, String company,
 			String subscriptionPlanCode, String ccFirstName, String ccLastName,
 			String ccNumber, String ccExpireMonth, String ccExpireYear,
-			String ccCardCode, String ccZip) throws Exception;
+			String ccCardCode, String ccZip, String couponCode) throws Exception;
 	
 	public CGCustomer updateCustomerAndSubscription(String custCode, String firstName, String lastName, 
 			String email, String company, String subscriptionPlanCode, String ccFirstName,
 			String ccLastName, String ccNumber, String ccExpireMonth, String ccExpireYear, 
-			String ccCardCode, String ccZip) throws Exception;
+			String ccCardCode, String ccZip, String couponCode) throws Exception;
 	
 	public CGCustomer updateCustomer(String custCode, String firstName, String lastName, 
 			String email, String company) throws Exception;
@@ -71,7 +71,7 @@ public interface ICGService {
 	public abstract Document updateSubscription(String customerCode,
 			String planCode, String ccFirstName, String ccLastName,
 			String ccNumber, String ccExpireMonth, String ccExpireYear,
-			String ccCardCode, String ccZip) throws Exception;
+			String ccCardCode, String ccZip, String couponCode) throws Exception;
 
 	public abstract Document cancelSubscription(String customerCode)
 			throws Exception;
