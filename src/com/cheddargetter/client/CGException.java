@@ -59,6 +59,7 @@ public class CGException extends Exception {
 		super(message);
 		this.setCode(code);
 		this.setAuxCode(auxCode);
+		System.out.println(toString());
 	}
 	
 	public String toString(){
