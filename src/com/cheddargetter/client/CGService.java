@@ -38,7 +38,6 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -48,11 +47,12 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.bind.DatatypeConverter;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import sun.misc.BASE64Encoder;
+//import sun.misc.BASE64Encoder;
 
 public class CGService implements ICGService {
 	private static final int DEFAULT_TIMEOUT = 15000; //15 seconds
@@ -61,11 +61,11 @@ public class CGService implements ICGService {
 	private static final int ADD_ITEM_QUANTITY_TIMEOUT = 5000; //5 seconds 
 	private static final int SET_ITEM_QUANTITY_TIMEOUT = 5000; //5 seconds 
 	private static final int REMOVE_ITEM_QUANTITY_TIMEOUT = 5000; //5 seconds	
-	
+
 	private static Logger log = Logger.getLogger(CGService.class.getName());
-	
+
 	private static String CG_SERVICE_ROOT = "https://cheddargetter.com/xml";
-	
+
 	private String userName;
 	private String password;
 	private String productCode;
@@ -106,23 +106,23 @@ public class CGService implements ICGService {
 	public void setProductCode(String productCode){
 		this.productCode = productCode;
 	}
-	
+
 	public CGService(){
 	}
-	
+
 	public CGService(String userName, String password, String productCode){
 		setUserName(userName);
 		setPassword(password);
 		setProductCode(productCode);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see com.rusticisoftware.cheddargetter.client.ICGService#getCustomer(java.lang.String)
 	 */
 	public CGCustomer getCustomer(String custCode) throws Exception {
 		return getCustomer(custCode, GET_CUSTOMER_TIMEOUT);
 	}
-	
+
 	public CGCustomer getCustomer(String custCode, int timeOutMilliSeconds) throws Exception {
 		Document doc = null;
 		try {
@@ -138,9 +138,9 @@ public class CGService implements ICGService {
 		Element customer = XmlUtils.getFirstChildByTagName(root, "customer");
 		return (customer == null) ? null : new CGCustomer(customer);
 	}
-	
-	
-	
+
+
+
 	/* (non-Javadoc)
 	 * @see com.rusticisoftware.cheddargetter.client.ICGService#customerExists(java.lang.String)
 	 */
@@ -155,7 +155,7 @@ public class CGService implements ICGService {
 		catch (Exception e) {}
 		return exists;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see com.rusticisoftware.cheddargetter.client.ICGService#getAllCustomers()
 	 */
@@ -164,7 +164,7 @@ public class CGService implements ICGService {
 		params.put("subscriptionStatus", "activeOnly");
 		return makeServiceCall("/customers/get/productCode/" + getProductCode(), params);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see com.rusticisoftware.cheddargetter.client.ICGService#createNewCustomer(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
@@ -172,7 +172,7 @@ public class CGService implements ICGService {
 			String email, String company, String subscriptionPlanCode, String ccFirstName,
 			String ccLastName, String ccNumber, String ccExpireMonth, String ccExpireYear, 
 			String ccCardCode, String ccZip, String couponCode) throws Exception {
-		
+
 		HashMap<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("code", custCode);
 		paramMap.put("firstName", firstName);
@@ -181,10 +181,10 @@ public class CGService implements ICGService {
 		if(company != null){
 			paramMap.put("company", company);
 		}
-		
+
 		paramMap.put("subscription[planCode]", subscriptionPlanCode);
 		if (couponCode != null) paramMap.put("subscription[couponCode]", couponCode);
-		
+
 		//If plan is free, no cc information needed, so we just check
 		//ccNumber field and assume the rest are there or not
 		if(ccNumber != null){
@@ -205,12 +205,12 @@ public class CGService implements ICGService {
 		Element customer = XmlUtils.getFirstChildByTagName(root, "customer");
 		return new CGCustomer(customer);
 	}
-	
+
 	public CGCustomer updateCustomerAndSubscription(String custCode, String firstName, String lastName, 
 			String email, String company, String subscriptionPlanCode, String ccFirstName,
 			String ccLastName, String ccNumber, String ccExpireMonth, String ccExpireYear, 
 			String ccCardCode, String ccZip, String couponCode) throws Exception {
-		
+
 		HashMap<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("firstName", firstName);
 		paramMap.put("lastName", lastName);
@@ -218,10 +218,10 @@ public class CGService implements ICGService {
 		if(company != null){
 			paramMap.put("company", company);
 		}
-		
+
 		paramMap.put("subscription[planCode]", subscriptionPlanCode);		
 		if (couponCode != null) paramMap.put("subscription[couponCode]", couponCode);
-		
+
 		//If plan is free, no cc information needed, so we just check
 		//ccNumber field and assume the rest are there or not
 		if(ccNumber != null){
@@ -242,7 +242,7 @@ public class CGService implements ICGService {
 		Element customer = XmlUtils.getFirstChildByTagName(root, "customer");
 		return new CGCustomer(customer);
 	}
-	
+
 	public CGCustomer updateCustomer(String custCode, String firstName, String lastName, 
 			String email, String company) throws Exception {
 		HashMap<String, String> paramMap = new HashMap<String, String>();
@@ -257,18 +257,18 @@ public class CGService implements ICGService {
 		Element customer = XmlUtils.getFirstChildByTagName(root, "customer");
 		return new CGCustomer(customer);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see com.rusticisoftware.cheddargetter.client.ICGService#updateSubscription(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	public Document updateSubscription(String customerCode, String planCode, String ccFirstName, String ccLastName,
 			String ccNumber, String ccExpireMonth, String ccExpireYear, String ccCardCode, 
 			String ccZip, String couponCode) throws Exception {
-		
+
 		HashMap<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("planCode", planCode);
 		if (couponCode != null) paramMap.put("subscription[couponCode]", couponCode);
-		
+
 		//If plan is free, no cc information needed, so we just check
 		//ccNumber field and assume the rest are there or not
 		if(ccNumber != null){
@@ -283,74 +283,74 @@ public class CGService implements ICGService {
 				paramMap.put("ccZip", ccZip);
 			}
 		}
-		
+
 		String relativeUrl = "/customers/edit-subscription/productCode/" + getProductCode() + "/code/" + customerCode;
 		return makeServiceCall(relativeUrl, paramMap);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see com.rusticisoftware.cheddargetter.client.ICGService#cancelSubscription(java.lang.String)
 	 */
 	public Document cancelSubscription(String customerCode) throws Exception {
 		return makeServiceCall("/customers/cancel/productCode/" + getProductCode() + "/code/" + customerCode, null);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see com.rusticisoftware.cheddargetter.client.ICGService#addItemQuantity(java.lang.String, java.lang.String)
 	 */
 	public Document addItemQuantity(String customerCode, String itemCode) throws Exception {
-	    return addItemQuantity(customerCode, itemCode, 1);
+		return addItemQuantity(customerCode, itemCode, 1);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see com.rusticisoftware.cheddargetter.client.ICGService#addItemQuantity(java.lang.String, java.lang.String, int)
 	 */
 	public Document addItemQuantity(String customerCode, String itemCode, int quantity) throws Exception {
-	    HashMap<String, String> paramMap = new HashMap<String, String>();
-	    paramMap.put("quantity", String.valueOf(quantity));
-	    
-	    String relativeUrl = "/customers/add-item-quantity/productCode/" + getProductCode() + 
-	                         "/code/" + customerCode + "/itemCode/" + itemCode;
-	    
-	    return makeServiceCall(relativeUrl, paramMap, ADD_ITEM_QUANTITY_TIMEOUT);
-	    
+		HashMap<String, String> paramMap = new HashMap<String, String>();
+		paramMap.put("quantity", String.valueOf(quantity));
+
+		String relativeUrl = "/customers/add-item-quantity/productCode/" + getProductCode() + 
+				"/code/" + customerCode + "/itemCode/" + itemCode;
+
+		return makeServiceCall(relativeUrl, paramMap, ADD_ITEM_QUANTITY_TIMEOUT);
+
 	}
-	
+
 	public Document setItemQuantity(String customerCode, String itemCode, int quantity) throws Exception {
-	    HashMap<String, String> paramMap = new HashMap<String, String>();
-	    paramMap.put("quantity", String.valueOf(quantity));
-	    
-	    String relativeUrl = "/customers/set-item-quantity/productCode/" + getProductCode() + 
-	                         "/code/" + customerCode + "/itemCode/" + itemCode;
-	    
-	    return makeServiceCall(relativeUrl, paramMap, SET_ITEM_QUANTITY_TIMEOUT);
-	    
+		HashMap<String, String> paramMap = new HashMap<String, String>();
+		paramMap.put("quantity", String.valueOf(quantity));
+
+		String relativeUrl = "/customers/set-item-quantity/productCode/" + getProductCode() + 
+				"/code/" + customerCode + "/itemCode/" + itemCode;
+
+		return makeServiceCall(relativeUrl, paramMap, SET_ITEM_QUANTITY_TIMEOUT);
+
 	}
-	
+
 	public Document removeItemQuantity(String customerCode, String itemCode, int quantity) throws Exception {
-	    HashMap<String, String> paramMap = new HashMap<String, String>();
-	    paramMap.put("quantity", String.valueOf(quantity));
-	    
-	    String relativeUrl = "/customers/remove-item-quantity/productCode/" + getProductCode() + 
-	                         "/code/" + customerCode + "/itemCode/" + itemCode;
-	    
-	    return makeServiceCall(relativeUrl, paramMap, REMOVE_ITEM_QUANTITY_TIMEOUT);
-	    
+		HashMap<String, String> paramMap = new HashMap<String, String>();
+		paramMap.put("quantity", String.valueOf(quantity));
+
+		String relativeUrl = "/customers/remove-item-quantity/productCode/" + getProductCode() + 
+				"/code/" + customerCode + "/itemCode/" + itemCode;
+
+		return makeServiceCall(relativeUrl, paramMap, REMOVE_ITEM_QUANTITY_TIMEOUT);
+
 	}
-	
+
 	public Document createOneTimeInvoice(String customerCode, String chargeCode, int quantity, double eachAmount, String description) throws Exception {
-	    HashMap<String, String> paramMap = new HashMap<String, String>();	    
-	    paramMap.put("charges[0][chargeCode]", chargeCode);
-	    paramMap.put("charges[0][quantity]", String.valueOf(quantity));
-	    paramMap.put("charges[0][eachAmount]", String.valueOf(eachAmount));
-	    paramMap.put("charges[0][description]", description);	    
-	    
-	    String relativeUrl = "/invoices/new/productCode/" + getProductCode() + 
-	                         "/code/" + customerCode;
-	    
-	    return makeServiceCall(relativeUrl, paramMap, DEFAULT_TIMEOUT);
+		HashMap<String, String> paramMap = new HashMap<String, String>();	    
+		paramMap.put("charges[0][chargeCode]", chargeCode);
+		paramMap.put("charges[0][quantity]", String.valueOf(quantity));
+		paramMap.put("charges[0][eachAmount]", String.valueOf(eachAmount));
+		paramMap.put("charges[0][description]", description);	    
+
+		String relativeUrl = "/invoices/new/productCode/" + getProductCode() + 
+				"/code/" + customerCode;
+
+		return makeServiceCall(relativeUrl, paramMap, DEFAULT_TIMEOUT);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see com.rusticisoftware.cheddargetter.client.ICGService#getLatestCreditCardData(java.lang.String)
 	 */
@@ -358,24 +358,24 @@ public class CGService implements ICGService {
 		CGCustomer cgCustomer;
 		try { cgCustomer = getCustomer(customerCode); }
 		catch (Exception e) { return null; }
-		
+
 		List<CGSubscription> subs = cgCustomer.getSubscriptions();
 		if(subs == null || subs.size() == 0){
 			return null;
 		}
-		
+
 		CGSubscription sub = subs.get(0);
 		if(sub.getCcExpirationDate() == null){
 			return null;
 		}
-		
+
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		cal.setTime(sub.getCcExpirationDate());
 		return new CreditCardData(sub.getCcFirstName(), sub.getCcLastName(), 
 				sub.getCcType(), sub.getCcLastFour(), 
 				cal.get(Calendar.MONTH), cal.get(Calendar.YEAR));
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see com.rusticisoftware.cheddargetter.client.ICGService#isLatestSubscriptionCanceled(java.lang.String)
 	 */
@@ -383,12 +383,12 @@ public class CGService implements ICGService {
 		CGCustomer cgCustomer;
 		try { cgCustomer = getCustomer(customerCode); }
 		catch (Exception e) { return false; }
-		
+
 		List<CGSubscription> subs = cgCustomer.getSubscriptions();
 		if(subs == null || subs.size() == 0){
 			return false;
 		}
-		
+
 		CGSubscription sub = subs.get(0);
 		if(sub.getCanceledDatetime() == null){
 			return false;
@@ -396,25 +396,25 @@ public class CGService implements ICGService {
 
 		return true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see com.rusticisoftware.cheddargetter.client.ICGService#getCurrentItemUsage(java.lang.String, java.lang.String)
 	 */
 	public int getCurrentItemUsage(String customerCode, String itemCode) throws Exception{
-	    CGCustomer cgCust = getCustomer(customerCode, GET_ITEM_QUANTITY_TIMEOUT);
-	    List<CGItem> currentItems = cgCust.getSubscriptions().get(0).getItems();
-	    for(CGItem item : currentItems){
-	        if(item.getCode().equals(itemCode)){
-	            return item.getQuantity();
-	        }
-	    }
-	    throw new Exception("Couldn't find item with code " + itemCode);
+		CGCustomer cgCust = getCustomer(customerCode, GET_ITEM_QUANTITY_TIMEOUT);
+		List<CGItem> currentItems = cgCust.getSubscriptions().get(0).getItems();
+		for(CGItem item : currentItems){
+			if(item.getCode().equals(itemCode)){
+				return item.getQuantity();
+			}
+		}
+		throw new Exception("Couldn't find item with code " + itemCode);
 	}
-	
+
 	public Document makeServiceCall(String path, Map<String,String> paramMap) throws Exception {
 		return makeServiceCall(path, paramMap, DEFAULT_TIMEOUT);
 	}
-	
+
 	public Document makeServiceCall(String path, Map<String,String> paramMap, int timeOutMilliSeconds) throws Exception {
 		String fullPath = CG_SERVICE_ROOT + path;
 		String encodedParams = encodeParamMap(paramMap);
@@ -435,11 +435,11 @@ public class CGService implements ICGService {
 		}
 		return responseDoc;
 	}
-	
+
 	protected String postTo(String urlStr, String userName, String password, String data, int timeOutMilliSeconds) throws Exception {
 
 		log.fine("Sending this data to this url: " + urlStr + " data = " + data);
-		
+
 		//Create a new request to send this data...
 		URL url = new URL(urlStr);
 		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
@@ -448,27 +448,27 @@ public class CGService implements ICGService {
 		InputStream inputStream = null;
 		InputStream errorStream = null;
 		OutputStream outputStream = null;
-		
+
 		try {
 			//Put authentication fields in http header, and make the data the body
-			BASE64Encoder enc = new BASE64Encoder();
+			//BASE64Encoder enc = new BASE64Encoder();
 			//connection.setRequestProperty("Content-Type", "text/xml");
 			String auth = userName + ":" + password;
-			connection.setRequestProperty("Authorization", "Basic " + enc.encode(auth.getBytes()));
-			
-			
+			String encoding = DatatypeConverter.printBase64Binary(auth.getBytes());
+			connection.setRequestProperty("Authorization", "Basic " + encoding); //enc.encode(auth.getBytes())
+
 			connection.setRequestMethod("POST");
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
 			connection.setUseCaches(false);
 			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-	
+
 			outputStream = connection.getOutputStream();
 			PrintWriter output = new PrintWriter(new OutputStreamWriter(outputStream));
 			output.write(data);
 			output.flush();
 			output.close();
-	
+
 			//Get response
 			BufferedReader rd;
 			try {
@@ -482,15 +482,15 @@ public class CGService implements ICGService {
 				}
 				rd = new BufferedReader(new InputStreamReader(errorStream));
 			}
-			
+
 			StringBuilder response = new StringBuilder();
 			String responseLine = null;
 			while((responseLine = rd.readLine()) != null){
 				response.append(responseLine);
 			}
-			
+
 			log.fine("Got this back from CG: " + response.toString());
-			
+
 			return response.toString();
 		}
 		finally {
@@ -508,7 +508,7 @@ public class CGService implements ICGService {
 			}
 		}
 	}
-	
+
 	protected String encodeParamMap(Map<String, String> paramMap) throws Exception {
 		if(paramMap == null || paramMap.keySet().size() == 0){
 			return "";
@@ -519,14 +519,14 @@ public class CGService implements ICGService {
 		}
 		//Cutoff last ampersand
 		encoded.delete(encoded.length() - 1, encoded.length());
-		
+
 		return encoded.toString();
 	}
-	
+
 	protected String getEncodedParam(String paramName, String paramVal) throws Exception {
 		return URLEncoder.encode(paramName, "UTF-8") + "=" + URLEncoder.encode(paramVal, "UTF-8");
 	}
-	
+
 	protected boolean checkResponseForError(Document doc) throws CGException, Exception {
 		Element root = doc.getDocumentElement();
 		if(root.getNodeName().equals("error")){
@@ -543,7 +543,7 @@ public class CGService implements ICGService {
 		}
 		return true;
 	}
-	
+
 	protected CGException getExceptionFromElement(Element errorElem){
 		String code = errorElem.getAttribute("code");
 		String auxCode = errorElem.getAttribute("auxCode");
@@ -553,32 +553,37 @@ public class CGService implements ICGService {
 		String message = errorElem.getTextContent();
 		return new CGException(Integer.parseInt(code), auxCode, message);
 	}
-	
+
 	public static Date parseCgDate(String cgDate) {
-		if(cgDate == null || cgDate.length() == 0){
+		if (cgDate == null || cgDate.length() == 0) {
 			return null;
 		}
-		
-		try{
-	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-		    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+			sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 			return sdf.parse(fixDateFormat(cgDate));
+		} catch (Exception e) {
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+				return sdf.parse(cgDate);
+			} catch (Exception ex) {
+				log.log(Level.WARNING, "Exception parsing date " + cgDate, e);
+				return null;
+			}
 		}
-		catch (Exception e){
-			log.log(Level.WARNING, "Exception parsing date " + cgDate, e);
-			return null;
-		}
-    }
-	
-	public static String fixDateFormat(String cgDate){
-    	//CG's dates have annoying ':' symbol in middle of timezone part
-    	//So here we take it out
-    	int tzIndex = cgDate.lastIndexOf("+");
-    	String tz = cgDate.substring(tzIndex, cgDate.length());
-    	String modifiedTz = tz.replace(":", "");
-    	return cgDate.substring(0, tzIndex) + modifiedTz;
 	}
-	
+
+	public static String fixDateFormat(String cgDate){
+		//CG's dates have annoying ':' symbol in middle of timezone part
+		//So here we take it out
+		int tzIndex = cgDate.lastIndexOf("+");
+		String tz = cgDate.substring(tzIndex, cgDate.length());
+		String modifiedTz = tz.replace(":", "");
+		return cgDate.substring(0, tzIndex) + modifiedTz;
+	}
+
 	private static String stripCcNumber(String ccNumber) {
 		return (ccNumber == null) ? null : ccNumber.replace(" ", "").replace("-", "");
 	}

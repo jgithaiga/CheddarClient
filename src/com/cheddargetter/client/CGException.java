@@ -38,6 +38,8 @@ public class CGException extends Exception {
 	public static final int UNKNOWN = 500;
 	public static final int BAD_GATEWAY = 512;
 	
+	private static final long serialVersionUID = 1L;
+	
 	private int code = UNKNOWN;
 	private String auxCode = "none";
 	

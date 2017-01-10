@@ -54,6 +54,8 @@ public class CGSubscription implements Serializable {
 	protected List<CGItem> items = new ArrayList<CGItem>();
 	protected List<CGInvoice> invoices = new ArrayList<CGInvoice>();
 	
+	private static final long serialVersionUID = 1L;
+	
 	public String getId() {
 		return id;
 	}

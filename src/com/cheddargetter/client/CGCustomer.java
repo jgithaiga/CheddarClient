@@ -49,6 +49,8 @@ public class CGCustomer implements Serializable {
 	protected Date modifiedDatetime;
 	protected List<CGSubscription> subscriptions = new ArrayList<CGSubscription>();
 	
+	private static final long serialVersionUID = 1L;
+	
 	public String getId() {
 		return id;
 	}

@@ -44,6 +44,8 @@ public class CGItem implements Serializable {
 	protected Date createdDatetime;
 	protected Date modifiedDatetime;
 	
+	private static final long serialVersionUID = 1L;
+	
 	public String getId() {
 		return id;
 	}

@@ -28,11 +28,9 @@
 
 package com.cheddargetter.client;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 public interface ICGService {
 

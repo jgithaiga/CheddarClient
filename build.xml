@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="cheddar.getter.client" default="package" basedir=".">
     <description>
-                This build file builds and packages the Cheddar Getter Client Library into a jar file.
+    	This build file builds and packages the Cheddar Getter Client Library into a jar file.
 	</description>
     <property file="${user.home}/${ant.project.name}.build.properties"/>
     <property file="${user.home}/build.properties"/>
@@ -40,7 +40,7 @@
     <target name="clean-package" depends="clean,package"/>
     <target name="compile" depends="init">
         <echo message="Compiling Source files from ${basedir}/${src.dir}"/>
-        <javac srcdir="${src.dir}/" includes="**/*.java" excludes="" destdir="${classes.dir}/${ant.project.name}" fork="true" deprecation="false" debug="true" memoryMaximumSize="512m" nowarn="true" target="${java.target.vm}">
+        <javac srcdir="${src.dir}/" includes="**/*.java" excludes="" destdir="${classes.dir}/${ant.project.name}" fork="true" deprecation="false" debug="true" memoryMaximumSize="512m" nowarn="true" target="${java.target.vm}" includeantruntime="false">
             <!--<classpath>
                 <fileset dir="${lib.dir}">
                     <include name="**/*.jar"/>

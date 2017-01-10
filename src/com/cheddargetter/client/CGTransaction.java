@@ -46,6 +46,8 @@ public class CGTransaction implements Serializable {
 	protected Date transactedDatetime;
 	protected Date createdDatetime;
 	
+	private static final long serialVersionUID = 1L;
+	
 	public String getId() {
 		return id;
 	}

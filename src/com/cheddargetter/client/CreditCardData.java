@@ -38,6 +38,8 @@ public class CreditCardData implements Serializable {
 	private int expireMonth;
 	private int expireYear;
 	
+	private static final long serialVersionUID = 1L;
+	
 	public String getFirstName() {
 		return firstName;
 	}

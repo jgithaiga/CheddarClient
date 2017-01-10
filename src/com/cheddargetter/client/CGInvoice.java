@@ -44,6 +44,8 @@ public class CGInvoice implements Serializable {
 	protected List<CGTransaction> transactions = new ArrayList<CGTransaction>();
 	protected List<CGCharge> charges = new ArrayList<CGCharge>();
 	
+	private static final long serialVersionUID = 1L;
+	
 	public String getId() {
 		return id;
 	}

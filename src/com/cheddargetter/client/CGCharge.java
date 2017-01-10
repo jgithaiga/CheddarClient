@@ -42,6 +42,8 @@ public class CGCharge implements Serializable {
 	protected String description;
 	protected Date createdDatetime;
 	
+	private static final long serialVersionUID = 1L;
+	
 	public String getId() {
 		return id;
 	}

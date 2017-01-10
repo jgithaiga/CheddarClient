@@ -52,6 +52,8 @@ public class CGPlan implements Serializable {
 	protected float recurringChargeAmount;
 	protected Date createdDatetime;
 	protected List<CGItem> items = new ArrayList<CGItem>();
+	
+	private static final long serialVersionUID = 1L;
 
 	public String getCode() {
 		return code;
