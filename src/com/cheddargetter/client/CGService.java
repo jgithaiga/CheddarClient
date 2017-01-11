@@ -555,22 +555,26 @@ public class CGService implements ICGService {
 	}
 
 	public static Date parseCgDate(String cgDate) {
-		if (cgDate == null || cgDate.length() == 0) {
-			return null;
-		}
+		if (cgDate == null || cgDate.length() == 0) { return null; }
 
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 			sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-			return sdf.parse(fixDateFormat(cgDate));
+			return sdf.parse(cgDate);			
 		} catch (Exception e) {
 			try {
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 				sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 				return sdf.parse(cgDate);
 			} catch (Exception ex) {
-				log.log(Level.WARNING, "Exception parsing date " + cgDate, e);
-				return null;
+				try {
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+					sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+					return sdf.parse(cgDate);
+				} catch (Exception ex2) {
+					log.log(Level.WARNING, "Exception parsing date " + cgDate, ex2);
+					return null;
+				}
 			}
 		}
 	}
