@@ -64,7 +64,7 @@ public class CGService implements ICGService {
 
 	private static Logger log = Logger.getLogger(CGService.class.getName());
 
-	private static String CG_SERVICE_ROOT = "https://cheddargetter.com/xml";
+	private static String CG_SERVICE_ROOT = "https://www.getcheddar.com/xml";
 
 	private String userName;
 	private String password;
